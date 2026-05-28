@@ -1,0 +1,14 @@
+/* Normalize.css + Element Plus base CSS are imported as JS modules in the
+   entry (main.js). This file layers the app's custom light/dark theme. */
+
+/* Element Plus brand-colour overrides (maps #5b5bfa onto --el-* vars)
+-------------------------- */
+@import './ElementOverrides.scss';
+
+/* Theme Light (default)
+-------------------------- */
+@import './Default.scss';
+
+/* Theme Dark
+-------------------------- */
+@import './Dark.scss';

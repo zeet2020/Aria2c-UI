@@ -1,0 +1,25 @@
+/* Map the app brand colour (#5b5bfa) onto Element Plus's CSS custom properties.
+   Element Plus 2 themes via CSS vars (--el-*), not the old element-ui $-- sass
+   vars, so the brand colour is applied here for both light and dark. */
+
+:root {
+  --el-color-primary: #{$--color-primary};
+  --el-color-primary-light-3: #8484fb;
+  --el-color-primary-light-5: #adadfc;
+  --el-color-primary-light-7: #d6d6fe;
+  --el-color-primary-light-8: #e9e9fe;
+  --el-color-primary-light-9: #f4f4ff;
+  --el-color-primary-dark-2: #4949c8;
+}
+
+/* Dark mode: keep the same brand hue; soften the lighter tints so they read
+   on dark surfaces (Element Plus uses light-N as "mix with bg"). */
+html.dark {
+  --el-color-primary: #6d6dff;
+  --el-color-primary-light-3: #4a4ac8;
+  --el-color-primary-light-5: #3a3a9c;
+  --el-color-primary-light-7: #2b2b6e;
+  --el-color-primary-light-8: #232356;
+  --el-color-primary-light-9: #1c1c44;
+  --el-color-primary-dark-2: #8a8aff;
+}

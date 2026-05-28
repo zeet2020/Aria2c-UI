@@ -1,0 +1,4 @@
+/target
+/gen/schemas
+# Sidecar binaries are copied per-platform at build time.
+/binaries

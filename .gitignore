@@ -1,0 +1,31 @@
+# OS / editor
+.DS_Store
+thumbs.db
+.idea/
+.vs/
+.vscode/
+*.log
+
+# Node
+node_modules/
+npm-debug.log.*
+# Lockfiles other than package-lock.json (standardize on npm)
+yarn.lock
+bun.lock
+bun.lockb
+
+# Eslint cache
+.eslintcache*
+
+# Vite frontend build output
+dist/
+
+# Tauri / Rust (also covered by src-tauri/.gitignore)
+src-tauri/target/
+src-tauri/gen/
+# aria2 sidecar binaries are staged per-platform at build time
+src-tauri/binaries/
+
+# misc
+*.local
+.env

@@ -1,0 +1,43 @@
+[package]
+name = "aui"
+version = "0.1.0"
+description = "Aria2 UI — a full-featured download manager (Tauri fork of Motrix)"
+authors = ["Dr_rOot"]
+license = "MIT"
+repository = "https://github.com/agalwood/Motrix"
+edition = "2021"
+rust-version = "1.77"
+
+[lib]
+name = "aui_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-shell = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-os = "2"
+tauri-plugin-process = "2"
+tauri-plugin-store = "2"
+tauri-plugin-autostart = "2"
+tauri-plugin-deep-link = "2"
+tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v4"] }
+log = "0.4"
+tauri-plugin-log = "2"
+trash = "5"
+# Pin transitive zbus — 5.15.0 was released broken (zvariant/zbus_macros
+# version skew). Remove this when upstream tauri/wry pins it themselves.
+zbus = "=5.14.0"
+zbus_macros = "=5.14.0"
+
+[features]
+# Default production features.
+default = []

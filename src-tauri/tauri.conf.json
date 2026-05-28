@@ -1,0 +1,74 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Aria2 UI",
+  "version": "0.1.0",
+  "identifier": "app.aui.native",
+  "build": {
+    "beforeDevCommand": "npm run vite:dev",
+    "devUrl": "http://localhost:9080",
+    "beforeBuildCommand": "npm run vite:build",
+    "frontendDist": "../dist/vite"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "title": "Aria2 UI",
+        "label": "main",
+        "width": 1024,
+        "height": 768,
+        "minWidth": 800,
+        "minHeight": 500,
+        "decorations": false,
+        "resizable": true,
+        "visible": false,
+        "center": true,
+        "backgroundColor": "#ffffff"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data: blob: asset: https://asset.localhost; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' ws://127.0.0.1:* http://127.0.0.1:* ipc: https://ipc.localhost; font-src 'self' data:; object-src 'none'; base-uri 'self'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "externalBin": ["binaries/aria2c"],
+    "resources": {
+      "resources/aria2.conf": "aria2.conf"
+    },
+    "category": "Utility",
+    "shortDescription": "A full-featured download manager",
+    "longDescription": "Aria2 UI is a full-featured download manager that supports HTTP, FTP, BitTorrent, Magnet, etc.",
+    "linux": {
+      "deb": {
+        "depends": [
+          "libwebkit2gtk-4.1-0",
+          "libgtk-3-0",
+          "libayatana-appindicator3-1"
+        ]
+      },
+      "rpm": {
+        "depends": [
+          "webkit2gtk4.1",
+          "gtk3",
+          "libappindicator-gtk3"
+        ]
+      }
+    }
+  },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["mo", "motrix", "magnet", "thunder"]
+      }
+    }
+  }
+}
