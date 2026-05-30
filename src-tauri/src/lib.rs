@@ -94,6 +94,18 @@ fn dispatch_event(name: String, _args: Vec<Value>) {
     log::trace!("[AUI] event: {}", name);
 }
 
+/// Sink for WebView console/runtime errors forwarded by the renderer's error
+/// bridge, so they land in the native log (stdout / log file) even when the
+/// inspector isn't open. `level` is "error" | "warn" | "info".
+#[tauri::command]
+fn report_frontend_log(level: String, message: String) {
+    match level.as_str() {
+        "error" => log::error!("[FRONTEND] {}", message),
+        "warn" => log::warn!("[FRONTEND] {}", message),
+        _ => log::info!("[FRONTEND] {}", message),
+    }
+}
+
 /// Allowed roots for `trash_item` — downloads dir, app data dir, configured
 /// download dir. Canonicalised so `..` traversal can't escape.
 fn trash_allowed_roots(app: &tauri::AppHandle) -> Vec<std::path::PathBuf> {
@@ -179,6 +191,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_autostart::init(
             MacosLauncher::LaunchAgent,
@@ -191,6 +204,7 @@ pub fn run() {
             get_tauri_version,
             dispatch_command,
             dispatch_event,
+            report_frontend_log,
             trash_item
         ])
         .setup(|app| {

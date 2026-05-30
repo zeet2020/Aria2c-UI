@@ -4,7 +4,9 @@ import api from '@/api'
 import {
   getLangDirection,
   pushItemToFixedLengthArray,
-  removeArrayItem
+  removeArrayItem,
+  separateConfig,
+  changeKeysToKebabCase
 } from '@shared/utils'
 import { fetchBtTrackerFromSource } from '@shared/utils/tracker'
 import { MAX_NUM_OF_DIRECTORIES } from '@shared/constants'
@@ -35,6 +37,17 @@ const actions = {
           resolve(config)
         })
     })
+  },
+  // Push the persisted engine (system) options into a freshly-started aria2 so
+  // saved global settings survive a restart. The engine boots from aria2.conf
+  // defaults, so without this only port/dir/secret (read by the start args)
+  // would be honoured. Restart-only keys are dropped inside changeGlobalOption.
+  applyToEngine ({ state }) {
+    const { system } = separateConfig(changeKeysToKebabCase(state.config))
+    if (isEmpty(system)) {
+      return
+    }
+    return api.changeGlobalOption(system)
   },
   save ({ dispatch }, config) {
     dispatch('task/saveSession', null, { root: true })

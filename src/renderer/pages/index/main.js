@@ -1,6 +1,10 @@
 import '@/shims/polyfills'
+import { installErrorBridge } from '@/utils/errorBridge'
 import { createApp } from 'vue'
 import ElementPlus, { ElLoading } from 'element-plus'
+
+// Pipe WebView errors/warnings to the native log as early as possible.
+installErrorBridge()
 import * as ElementPlusIcons from '@element-plus/icons-vue'
 import enLocale from 'element-plus/es/locale/lang/en'
 import axios from 'axios'

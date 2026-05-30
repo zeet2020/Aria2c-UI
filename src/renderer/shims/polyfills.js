@@ -15,3 +15,12 @@ if (typeof globalThis.process === 'undefined') {
     nextTick: (fn, ...args) => Promise.resolve().then(() => fn(...args))
   }
 }
+
+// `setImmediate` is a Node global with no WebKit/WebView equivalent; several
+// components (TaskActivity, TaskDetail, AddTask) call it. Map it to a macrotask.
+if (typeof globalThis.setImmediate === 'undefined') {
+  globalThis.setImmediate = (fn, ...args) => setTimeout(fn, 0, ...args)
+}
+if (typeof globalThis.clearImmediate === 'undefined') {
+  globalThis.clearImmediate = (id) => clearTimeout(id)
+}

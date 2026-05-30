@@ -177,18 +177,39 @@
       }
     },
     mounted () {
-      setImmediate(() => {
-        this.updateGraphicWidth()
-      })
+      // The drawer animates open, so a one-shot measure on mount reads a
+      // too-small width and the piece grid collapses to a single column. Track
+      // the box with a ResizeObserver so graphicWidth follows the real width
+      // (open animation, window resize, tab switches).
+      this.updateGraphicWidth()
+      if (typeof ResizeObserver !== 'undefined' && this.$refs.graphicBox) {
+        // rAF defers the read out of the observer's delivery tick, avoiding the
+        // "ResizeObserver loop completed with undelivered notifications" warning.
+        this._ro = new ResizeObserver(() => {
+          window.requestAnimationFrame(() => this.updateGraphicWidth())
+        })
+        this._ro.observe(this.$refs.graphicBox)
+      }
+    },
+    unmounted () {
+      if (this._ro) {
+        this._ro.disconnect()
+        this._ro = null
+      }
     },
     methods: {
       bytesToSize,
       timeFormat,
       updateGraphicWidth () {
-        if (!this.$refs.graphicBox) {
+        const box = this.$refs.graphicBox
+        if (!box) {
           return
         }
-        this.graphicWidth = this.calcInnerWidth(this.$refs.graphicBox)
+        const width = this.calcInnerWidth(box)
+        // Only update on a real change to avoid a ResizeObserver feedback loop.
+        if (width > 0 && width !== this.graphicWidth) {
+          this.graphicWidth = width
+        }
       },
       calcInnerWidth (ele) {
         if (!ele) {
@@ -196,9 +217,12 @@
         }
 
         const style = getComputedStyle(ele, null)
-        const width = parseInt(style.width, 10)
-        const paddingLeft = parseInt(style.paddingLeft, 10)
-        const paddingRight = parseInt(style.paddingRight, 10)
+        const paddingLeft = parseInt(style.paddingLeft, 10) || 0
+        const paddingRight = parseInt(style.paddingRight, 10) || 0
+        // clientWidth includes padding but not borders/scrollbar; subtract
+        // padding to get the usable inner width. More reliable than parsing
+        // the computed `width` string.
+        const width = ele.clientWidth || parseInt(style.width, 10) || 0
         return width - paddingLeft - paddingRight
       }
     }
@@ -208,6 +232,12 @@
 <style lang="scss">
 .progress-wrapper {
   padding: 0.6875rem 0 0 0;
+  // el-progress is inline-block and collapses to content width; make it fill
+  // the column so the line bar spans the full available width.
+  .el-progress {
+    display: block;
+    width: 100%;
+  }
 }
 
 .task-time-remaining {

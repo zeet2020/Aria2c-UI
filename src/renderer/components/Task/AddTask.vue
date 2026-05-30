@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    custom-class="tab-title-dialog add-task-dialog"
+    class="tab-title-dialog add-task-dialog"
     width="67vw"
     :model-value="visible"
     :top="dialogTop"
@@ -217,6 +217,7 @@
   import is from 'electron-is'
   import { mapState } from 'vuex'
   import { isEmpty } from 'lodash'
+  import { readText } from '@tauri-apps/plugin-clipboard-manager'
   import HistoryDirectory from '@/components/Preference/HistoryDirectory'
   import SelectDirectory from '@/components/Native/SelectDirectory'
   import SelectTorrent from '@/components/Task/SelectTorrent'
@@ -296,7 +297,7 @@
         // a convenience, so never let a failure reject and break dialog open.
         let content = ''
         try {
-          content = await navigator.clipboard.readText()
+          content = await readText()
         } catch (e) {
           console.warn('[AUI] clipboard read unavailable:', e)
           return

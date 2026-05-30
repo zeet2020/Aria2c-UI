@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron'
 import is from 'electron-is'
-import { isEmpty, clone } from 'lodash'
+import { isEmpty, clone, omit } from 'lodash'
 import { Aria2 } from '@shared/aria2'
 import {
   separateConfig,
@@ -10,6 +10,7 @@ import {
   changeKeysToCamelCase,
   changeKeysToKebabCase
 } from '@shared/utils'
+import { needRestartKeys } from '@shared/configKeys'
 import { ENGINE_RPC_HOST } from '@shared/constants'
 
 export default class Api {
@@ -101,6 +102,10 @@ export default class Api {
     if (!isEmpty(system)) {
       console.info('[AUI] save system config: ', system)
       config.system = system
+      // Push to the running engine so the change takes effect immediately:
+      // changeGlobalOption updates the engine default (applies to new tasks),
+      // and updateActiveTaskOption applies it to currently-active downloads.
+      this.changeGlobalOption(system)
       this.updateActiveTaskOption(system)
     }
 
@@ -116,7 +121,14 @@ export default class Api {
   }
 
   changeGlobalOption (options) {
-    const args = formatOptionsForEngine(options)
+    // aria2 rejects the whole changeGlobalOption call if it contains options
+    // that can't change at runtime (rpc/listen ports, secret). Those are
+    // applied on engine restart via the start args, so drop them here.
+    const live = omit(options, needRestartKeys)
+    if (isEmpty(live)) {
+      return Promise.resolve()
+    }
+    const args = formatOptionsForEngine(live)
 
     return this.client.call('changeGlobalOption', args)
   }

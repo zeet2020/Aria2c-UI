@@ -247,10 +247,17 @@
         this.$store.dispatch('app/fetchEngineInfo')
         this.$store.dispatch('app/fetchEngineOptions')
 
+        // Re-apply persisted engine options to the freshly-started aria2, then
+        // refresh the UI view of them. fetchPreference first so state.config is
+        // populated regardless of boot ordering.
+        this.$store.dispatch('preference/fetchPreference')
+          .then(() => this.$store.dispatch('preference/applyToEngine'))
+          .then(() => this.$store.dispatch('app/fetchEngineOptions'))
+
         this.startPolling()
       }, 100)
     },
-    destroyed () {
+    unmounted () {
       this.$store.dispatch('task/saveSession')
 
       this.unbindEngineEvents()

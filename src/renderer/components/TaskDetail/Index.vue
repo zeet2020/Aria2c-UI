@@ -1,6 +1,6 @@
 <template>
   <el-drawer
-    custom-class="panel task-detail-drawer"
+    class="panel task-detail-drawer"
     size="61.8%"
     v-if="gid"
     :title="$t('task.task-detail-title')"
@@ -180,7 +180,7 @@
     mounted () {
       window.addEventListener('resize', this.handleAppResize)
     },
-    destroyed () {
+    unmounted () {
       window.removeEventListener('resize', this.handleAppResize)
       cached.files = []
     },
@@ -290,8 +290,14 @@
 <style lang="scss">
 .task-detail-drawer {
   min-width: 478px;
+  // Start the panel below the fixed 36px title bar so the window min/max/close
+  // controls (z-index 5000) sit in the title strip above the panel, never over
+  // it. Otherwise the window close button overlaps the panel's own close button.
+  &.el-drawer.rtl {
+    top: 36px;
+    height: calc(100% - 36px);
+  }
   .el-drawer__header {
-    padding-top: 2rem;
     margin-bottom: 0;
   }
   .el-drawer__body {

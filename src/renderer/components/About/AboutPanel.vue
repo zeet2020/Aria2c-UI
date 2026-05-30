@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    custom-class="app-about-dialog"
+    class="app-about-dialog"
     width="61.8vw"
     :model-value="visible"
     @open="handleOpen"

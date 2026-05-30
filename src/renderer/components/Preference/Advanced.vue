@@ -55,7 +55,7 @@
           >
             <el-input
               type="textarea"
-              rows="2"
+              :rows="2"
               auto-complete="off"
               @change="handleProxyBypassChange"
               :placeholder="`${$t('preferences.proxy-bypass-input-tips')}`"
@@ -157,7 +157,7 @@
             </el-row>
             <el-input
               type="textarea"
-              rows="3"
+              :rows="3"
               auto-complete="off"
               :placeholder="`${$t('preferences.bt-tracker-input-tips')}`"
               v-model="form.btTracker">
@@ -197,7 +197,7 @@
             >
               {{ $t('preferences.rpc-listen-port') }}
               <el-input
-                :placeholder="rpcDefaultPort"
+                :placeholder="String(rpcDefaultPort)"
                 :maxlength="8"
                 v-model="form.rpcListenPort"
                 @change="onRpcListenPortChange"
@@ -333,7 +333,7 @@
             {{ $t('preferences.mock-user-agent') }}
             <el-input
               type="textarea"
-              rows="2"
+              :rows="2"
               auto-complete="off"
               placeholder="User-Agent"
               v-model="form.userAgent">

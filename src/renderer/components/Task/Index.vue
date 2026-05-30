@@ -382,30 +382,33 @@
     },
     created () {
       this.changeCurrentList()
+      // The command bus invokes listeners with the emitter as `this`, so bind
+      // each handler to this component (otherwise `this.$t` / `this.$store` are
+      // undefined). Keep stable refs so the unmounted hook can detach them.
+      this._commandHandlers = {
+        'pause-task': this.handlePauseTask.bind(this),
+        'resume-task': this.handleResumeTask.bind(this),
+        'stop-task-seeding': this.handleStopTaskSeeding.bind(this),
+        'restart-task': this.handleRestartTask.bind(this),
+        'reveal-in-folder': this.handleRevealInFolder.bind(this),
+        'delete-task': this.handleDeleteTask.bind(this),
+        'delete-task-record': this.handleDeleteTaskRecord.bind(this),
+        'batch-delete-task': this.handleBatchDeleteTask.bind(this),
+        'copy-task-link': this.handleCopyTaskLink.bind(this),
+        'show-task-info': this.handleShowTaskInfo.bind(this)
+      }
     },
     mounted () {
-      commands.on('pause-task', this.handlePauseTask)
-      commands.on('resume-task', this.handleResumeTask)
-      commands.on('stop-task-seeding', this.handleStopTaskSeeding)
-      commands.on('restart-task', this.handleRestartTask)
-      commands.on('reveal-in-folder', this.handleRevealInFolder)
-      commands.on('delete-task', this.handleDeleteTask)
-      commands.on('delete-task-record', this.handleDeleteTaskRecord)
-      commands.on('batch-delete-task', this.handleBatchDeleteTask)
-      commands.on('copy-task-link', this.handleCopyTaskLink)
-      commands.on('show-task-info', this.handleShowTaskInfo)
+      Object.entries(this._commandHandlers).forEach(
+        ([id, fn]) => commands.on(id, fn)
+      )
     },
-    destroyed () {
-      commands.off('pause-task', this.handlePauseTask)
-      commands.off('resume-task', this.handleResumeTask)
-      commands.off('stop-task-seeding', this.handleStopTaskSeeding)
-      commands.off('restart-task', this.handleRestartTask)
-      commands.off('reveal-in-folder', this.handleRevealInFolder)
-      commands.off('delete-task', this.handleDeleteTask)
-      commands.off('delete-task-record', this.handleDeleteTaskRecord)
-      commands.off('batch-delete-task', this.handleBatchDeleteTask)
-      commands.off('copy-task-link', this.handleCopyTaskLink)
-      commands.off('show-task-info', this.handleShowTaskInfo)
+    // Vue 3 renamed `destroyed` -> `unmounted`; the old name never fired, so
+    // listeners leaked and stacked up across remounts.
+    unmounted () {
+      Object.entries(this._commandHandlers).forEach(
+        ([id, fn]) => commands.off(id, fn)
+      )
     }
   }
 </script>

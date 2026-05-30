@@ -72,7 +72,9 @@
 
       function startDrag (e) {
         containerRect = container.getBoundingClientRect()
-        self.children = container.childNodes
+        // `children` (elements only); `childNodes` also yields text/comment
+        // nodes — Vue 3 inserts comment anchors that lack getBoundingClientRect.
+        self.children = container.children
         start = getCoords(e, containerRect)
         end = start
         document.addEventListener('mousemove', drag)
@@ -119,12 +121,19 @@
       document.addEventListener('mouseup', endDrag)
       document.addEventListener('touchend', endDrag)
 
-      this.$once('on:destroy', () => {
+      // Vue 3 removed `$once`; stash teardown and run it from unmounted().
+      this._teardown = () => {
         container.removeEventListener('mousedown', startDrag)
         container.removeEventListener('touchstart', touchStart)
         document.removeEventListener('mouseup', endDrag)
         document.removeEventListener('touchend', endDrag)
-      })
+      }
+    },
+    unmounted () {
+      if (this._teardown) {
+        this._teardown()
+        this._teardown = null
+      }
     },
     methods: {
       createBox () {
